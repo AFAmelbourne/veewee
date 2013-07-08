@@ -15,15 +15,41 @@ module Veewee
               ui.info "Creating an iso directory"
               FileUtils.mkdir(env.config.veewee.iso_dir)
             end
+
+            full_path = File.join(env.config.veewee.iso_dir,filename)
+            unless iso_exists?(filename, full_path)
+              mirrors = Array(url)
+              mirrors.each do |mirror|
+                begin
+                  download_progress(mirror,full_path)
+                  return true
+                rescue
+                end
+                
+                unless mirror == mirrors.last
+                  ui.info ""
+                  ui.info "Trying next mirror"
+                  next
+                end
+              end
+              
+              ui.error ""
+              ui.error "Failed to download iso #{filename}"
+              ui.error "Check the :iso_src inside your definition"
+              exit(true)
+            end
+          end
+
+          def iso_exists?(filename, full_path)
             ui.info "Checking if isofile #{filename} already exists."
-            full_path=File.join(env.config.veewee.iso_dir,filename)
             ui.info "Full path: #{full_path}"
             if File.exists?(full_path)
               ui.info ""
               ui.info "The isofile #{filename} already exists."
-            else
-              download_progress(url,full_path)
+              return true
             end
+
+            return false
           end
 
           def download_progress(url,localfile)
@@ -168,7 +194,6 @@ module Veewee
 
           end
         end #Module
-
       end #Module
     end #Module
   end #Module
