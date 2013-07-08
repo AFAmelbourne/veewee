@@ -4,7 +4,7 @@ module Veewee
 
       register "version", "Prints the Veewee version information"
       def execute
-        env.ui.info "Version : #{Veewee::VERSION} - use at your own risk"
+        env.ui.info "Version : #{Veewee::VERSION} (AFA) - use at your own risk"
       end
 
     end
